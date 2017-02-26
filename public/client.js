@@ -3,8 +3,7 @@ var userNickname =  '';
 var users = {};
 
 function updateScroll(){
-    var element = document.getElementById("chat");
-    element.scrollTop = element.scrollHeight;
+	$("#chat").scrollTop($("#chat")[0].scrollHeight);
 }
 
 function updateUsers(people){
@@ -30,11 +29,15 @@ $(function() {
     	var li = document.createElement('li');
     	var time = document.createElement('span');
 		var username = document.createElement('span');
-		var message = document.createElement('span');
+		var content = document.createElement('span');
+
+		username.setAttribute('style', 'color: #' + code);
 
 		// If current user
     	if (id == userNickname) {
-    		message.setAttribute('style', 'font-weight: bold');
+    		time.setAttribute('style', 'font-weight: bold');
+    		username.setAttribute('style', 'font-weight: bold; color: #' + code);
+    		content.setAttribute('style', 'font-weight: bold');
 
 	    	// If change nickname
 	    	if (msg.startsWith('/nick ')) {
@@ -49,18 +52,17 @@ $(function() {
 	    	}
     	}
 
-		username.setAttribute('style', 'color: #' + code);
-		time.setAttribute('style', 'color: #A8A8A8');
-
     	username.innerHTML = id + ': &nbsp';
 		time.innerHTML = timestamp + ' &nbsp&nbsp';
-		message.innerHTML = msg;
+		content.innerHTML = msg;
 
     	li.appendChild(time);
     	li.appendChild(username);
-    	li.appendChild(message);
+    	li.appendChild(content);
 
     	$('#messages').append(li);
+
+    	socket.emit('updateLog', time.innerHTML + username.innerHTML + content.innerHTML);
 
     	updateScroll();
 
@@ -78,5 +80,21 @@ $(function() {
     socket.on("setUsers", function(people){
     	users = people;
     	updateUsers(people);
+  	});
+
+  	socket.on("showLog", function(log, nickname){
+    	if (userNickname == nickname) {
+			for (var i = 0; i < log.length; i++) {
+				var li = document.createElement('li');
+				var message = document.createElement('span');
+
+				message.innerHTML = log[i];
+				message.setAttribute('style', 'color: #A8A8A8');
+
+				li.appendChild(message);
+				$('#messages').append(li);
+	  		}
+  		  	updateScroll();
+	  	}
   	});
 });
