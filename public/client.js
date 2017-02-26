@@ -1,9 +1,17 @@
-var userColor = '000000'
-var userNickname =  ''
+var userColor = '000000';
+var userNickname =  '';
+var users = {};
 
 function updateScroll(){
     var element = document.getElementById("chat");
     element.scrollTop = element.scrollHeight;
+}
+
+function updateUsers(people){
+	$('#userList').empty();
+	for(var key in people){
+		$('#userList').append($('<li>').text(people[key]));
+	}
 }
 
 $(function() {
@@ -55,6 +63,8 @@ $(function() {
     	$('#messages').append(li);
 
     	updateScroll();
+
+    	updateUsers(users);
     });
 
     socket.on("setNickname", function(oldNickname, newNickname){
@@ -64,4 +74,9 @@ $(function() {
 		    displayName.innerHTML = "You are " + newNickname + ".";
     	}
     });
+
+    socket.on("setUsers", function(people){
+    	users = people;
+    	updateUsers(people);
+  	});
 });

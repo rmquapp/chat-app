@@ -6,6 +6,10 @@ form { padding: 1px; position: fixed; bottom: 20px; width: 100%; margin-top: 20p
 
 #messages { list-style-type: none; margin: 0; padding: 0; }
 #messages li { padding: 5px 10px; }
+
+#userList { list-style-type: none; margin: 0; padding: 0; }
+#userList li { padding: 5px 10px; }
+
 /*#messages li:nth-child(odd) { background: #eee; }
 */
 

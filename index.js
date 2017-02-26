@@ -18,7 +18,8 @@ io.on("connection", function (socket) {
     	var nickname = 'User' + (Object.keys(people).length + 1)
         people[socket.id] = nickname;
         colors[socket.id] = '000000';
-        io.sockets.emit("setNickname", '', nickname)
+        io.sockets.emit("setNickname", '', nickname);
+        io.sockets.emit("setUsers", people);
     });
 
     socket.on("send", function(msg){
@@ -31,6 +32,7 @@ io.on("connection", function (socket) {
 
     socket.on("disconnect", function(){
         delete people[socket.id];
+        io.sockets.emit("setUsers", people);
     });
 
     socket.on("changeNickname", function(nickname){
@@ -44,6 +46,7 @@ io.on("connection", function (socket) {
   			oldNickname = people[socket.id];
       		people[socket.id] = nickname;
       		io.sockets.emit("setNickname", oldNickname, nickname);
+      		io.sockets.emit("setUsers", people);
     	}
     });
 
