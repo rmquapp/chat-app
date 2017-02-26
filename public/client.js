@@ -1,7 +1,14 @@
 var userColor = '000000'
 var userNickname =  ''
 
+function updateScroll(){
+    var element = document.getElementById("chat");
+    element.scrollTop = element.scrollHeight;
+}
+
 $(function() {
+	$('#m').focus();
+
     var socket = io();
     socket.emit("join");
 
@@ -35,8 +42,10 @@ $(function() {
     	}
 
 		username.setAttribute('style', 'color: #' + code);
-    	username.innerHTML = id + ': ';
-		time.innerHTML = timestamp + ' ';
+		time.setAttribute('style', 'color: #A8A8A8');
+
+    	username.innerHTML = id + ': &nbsp';
+		time.innerHTML = timestamp + ' &nbsp&nbsp';
 		message.innerHTML = msg;
 
     	li.appendChild(time);
@@ -44,11 +53,15 @@ $(function() {
     	li.appendChild(message);
 
     	$('#messages').append(li);
+
+    	updateScroll();
     });
 
     socket.on("setNickname", function(oldNickname, newNickname){
     	if (userNickname == oldNickname) {
     		userNickname = newNickname;
+		    var displayName = document.getElementById("nicknameMessage");
+		    displayName.innerHTML = "You are " + newNickname + ".";
     	}
     });
 });

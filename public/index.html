@@ -5,9 +5,18 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <ul id="messages"></ul>
+    <div id="left" class="left clear">
+      <p id="nicknameMessage">You are User1.</p>
+      <div id="chat">
+        <ul id="messages"></ul>
+      </div>
+    </div>
+    <div id="right" class="right">
+      <p id="currentlyOnlineMessage">Currently online:</p>    
+      <div id="users"></div>
+    </div>
     <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+      <input id="m" autocomplete="off" />
     </form>
     <script
        src="https://code.jquery.com/jquery-3.1.1.min.js"

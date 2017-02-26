@@ -15,7 +15,7 @@ app.use(express.static(__dirname + '/public'));
 
 io.on("connection", function (socket) {
     socket.on("join", function(){
-    	var nickname = 'user' + (Object.keys(people).length + 1)
+    	var nickname = 'User' + (Object.keys(people).length + 1)
         people[socket.id] = nickname;
         colors[socket.id] = '000000';
         io.sockets.emit("setNickname", '', nickname)
