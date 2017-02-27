@@ -1,6 +1,7 @@
 var userColor = '000000';
 var userNickname =  '';
 var users = {};
+var firstTime = true;
 
 function updateScroll(){
 	$("#chat").scrollTop($("#chat")[0].scrollHeight);
@@ -8,8 +9,16 @@ function updateScroll(){
 
 function updateUsers(people){
 	$('#userList').empty();
-	for(var key in people){
-		$('#userList').append($('<li>').text(people[key]));
+
+	var uniqueUsers = [];
+	for (var key in people) {
+		var nickname = people[key];
+		if (!uniqueUsers.includes(nickname)) {
+			uniqueUsers.push(nickname);
+		}
+  	}
+	for (var i = 0; i < uniqueUsers.length; i++) {
+		$('#userList').append($('<li>').text(uniqueUsers[i]));
 	}
 }
 
@@ -17,7 +26,7 @@ $(function() {
 	$('#m').focus();
 
     var socket = io();
-    socket.emit("join");
+    socket.emit("join", getCookie());
 
     $('form').submit(function(){
 		socket.emit('send', $('#m').val());
@@ -25,7 +34,7 @@ $(function() {
 		return false;
     });
 
-    socket.on("chat", function(timestamp, id, code, msg){    	
+    socket.on("chat", function(socketId, timestamp, name, code, msg){	
     	var li = document.createElement('li');
     	var time = document.createElement('span');
 		var username = document.createElement('span');
@@ -34,7 +43,7 @@ $(function() {
 		username.setAttribute('style', 'color: #' + code);
 
 		// If current user
-    	if (id == userNickname) {
+    	if (name == userNickname) {
     		time.setAttribute('style', 'font-weight: bold');
     		username.setAttribute('style', 'font-weight: bold; color: #' + code);
     		content.setAttribute('style', 'font-weight: bold');
@@ -52,7 +61,7 @@ $(function() {
 	    	}
     	}
 
-    	username.innerHTML = id + ': &nbsp';
+    	username.innerHTML = name + ': &nbsp';
 		time.innerHTML = timestamp + ' &nbsp&nbsp';
 		content.innerHTML = msg;
 
@@ -62,7 +71,9 @@ $(function() {
 
     	$('#messages').append(li);
 
-    	socket.emit('updateLog', time.innerHTML + username.innerHTML + content.innerHTML);
+    	if (name == userNickname) {
+    		socket.emit('updateLog', socketId, time.innerHTML + username.innerHTML + content.innerHTML);
+    	}
 
     	updateScroll();
 
@@ -74,6 +85,7 @@ $(function() {
     		userNickname = newNickname;
 		    var displayName = document.getElementById("nicknameMessage");
 		    displayName.innerHTML = "You are " + newNickname + ".";
+		    setCookie(newNickname);
     	}
     });
 
@@ -83,7 +95,7 @@ $(function() {
   	});
 
   	socket.on("showLog", function(log, nickname){
-    	if (userNickname == nickname) {
+    	if (userNickname == nickname && firstTime) {
 			for (var i = 0; i < log.length; i++) {
 				var li = document.createElement('li');
 				var message = document.createElement('span');
@@ -95,6 +107,30 @@ $(function() {
 				$('#messages').append(li);
 	  		}
   		  	updateScroll();
+  		  	firstTime = false;
 	  	}
   	});
 });
+
+function setCookie(username) {
+    var d = new Date();
+    d.setTime(d.getTime() + (1*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = "username=" + username + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    var name = "username=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}

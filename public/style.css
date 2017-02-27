@@ -10,9 +10,6 @@ form { padding: 1px; position: fixed; bottom: 20px; width: 100%; margin-top: 20p
 #userList { list-style-type: none; margin: 0; padding: 0; }
 #userList li { padding: 5px 10px; }
 
-/*#messages li:nth-child(odd) { background: #eee; }
-*/
-
 #chat {
     box-shadow: 0 4px 20px -2px #D0D0D0;
 	width: 100%;

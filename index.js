@@ -16,8 +16,10 @@ app.use(express.static(__dirname + '/public'));
 
 
 io.on("connection", function (socket) {
-    socket.on("join", function(){
-    	var nickname = 'User' + (Object.keys(people).length + 1)
+    socket.on("join", function(nickname){
+    	if (nickname == "") {
+    		nickname = 'User' + (Object.keys(people).length + 1)
+    	}
 
         people[socket.id] = nickname;
         colors[socket.id] = '000000';
@@ -33,7 +35,7 @@ io.on("connection", function (socket) {
 		var hour = date.getHours();
 		var timestamp = hour + ':' + minutes;
 
-        io.sockets.emit("chat", timestamp, people[socket.id], colors[socket.id], msg);
+        io.sockets.emit("chat", socket.id, timestamp, people[socket.id], colors[socket.id], msg);
     });
 
     socket.on("disconnect", function(){
@@ -66,8 +68,10 @@ io.on("connection", function (socket) {
     	colors[socket.id] = color;
     });
 
-    socket.on("updateLog", function(message){
-    	log.push(message);
+    socket.on("updateLog", function(socketId, message){
+    	if (socketId == socket.id) {
+    		log.push(message);
+    	}
     });
 
 });
