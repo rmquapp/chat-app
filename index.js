@@ -49,19 +49,23 @@ io.on("connection", function (socket) {
     });
 
     socket.on("changeNickname", function(nickname){
-    	var unique = true;
-		for (var key in people) {
-  			if (people[key] == nickname) {
-  				unique = false;
-  			}
-  		}
-  		if (unique) {
-  			oldNickname = people[socket.id];
-      		people[socket.id] = nickname;
+        var unique = true;
+        for (var key in people) {
+            if (people[key] == nickname) {
+                unique = false;
+            }
+        }
+        if (unique) {
+            oldNickname = people[socket.id];
+            for (var key in people) {
+                if (people[key] == oldNickname) {
+                    people[key] = nickname
+                }
+            }
 
-      		io.sockets.emit("setNickname", oldNickname, nickname);
-      		io.sockets.emit("setUsers", people);
-    	}
+            io.sockets.emit("setNickname", oldNickname, nickname);
+            io.sockets.emit("setUsers", people);
+        }
     });
 
     socket.on("changeColor", function(color){
